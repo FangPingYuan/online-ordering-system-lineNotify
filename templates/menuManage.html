@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<?php include('basic/header.html'); ?>
+
+<body style="font-family:Microsoft JhengHei;">
+    <div class='wrapper'>
+        <?php include('basic/topbar.html'); ?>
+        <div class='container'>
+            <div class='row mx-0 justify-content-center'>
+                <div class="card" style="width: 960px; margin: 30px;">
+                    <div class='card-body'>
+                        <div class='row mx-0 justify-content-center'>
+                            <div class='col'>
+                                <button type="button" class="btn btn-primary"
+                                        data-toggle="modal" data-target="#exampleModal">
+                                        新增
+                                    </button>
+                            </div>
+                            <div class='col'></div>
+                            <div class='col'></div>
+                            <div class='col'></div>
+			</div>
+                        <div class='row my-3 justify-content-center'>
+                                <table border="1" id="table" class="table">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>品項</th>
+                                            <th>客製化</th>
+                                            <th width="80px">價錢</th>
+                                            <th width=10%>刪除</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="needs-validation" novalidate>
+
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+
+                                    <div class="modal-body">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+
+                                        <div class="container">
+
+                                            <br>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <a style="font-size: 30px;">新增餐點</a>
+                                                </div>
+                                            </div>
+
+                                            <div class="row ml-3 my-3">
+                                                <div class="col-sm-9">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">品項</span>
+                                                        </div>
+
+                                                        <input type="text" class="form-control col-sm-8" id="name"
+                                                            name="name" required />
+                                                        <div class="invalid-feedback">
+                                                            請輸入品項名
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="row ml-3 my-3">
+                                                <div class="col-sm-9">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">價錢</span>
+                                                        </div>
+                                                        <input type="number" class="form-control col-sm-8" id="price" min="1" max="5000"
+                                                            required />
+                                                        <div class="invalid-feedback">
+                                                            請輸入價格
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row ml-3 my-3">
+                                                <div class="col-sm-9">
+                                                    <div class="input-group align-items-center">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">客製化</span>
+                                                        </div>
+                                                        <input type="checkbox" name="customize" value="冰塊"
+                                                            group="1">冰塊<br>
+                                                        <input type="checkbox" name="customize" value="甜度"
+                                                            group="1">甜度<br>
+                                                        <input type="checkbox" name="customize" value="辣度"
+                                                            group="1">辣度<br>
+                                                        <input type="checkbox" name="customize" value="熟度"
+                                                            group="1">熟度<br>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">取消</button>
+                                            <button id="btnAdd" type="submit" class="btn btn-primary"
+                                                name="btnAdd">確認新增</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"
+        rel="stylesheet">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+</body>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            url: '/getOwnShopMenu',
+            dataType: "json",
+            type: "GET",
+            data: {},
+            success: function (data) {
+                for (i = 0; i < data.length; i++) {
+                    temp = '<tr><th>' + data[i]['name'] + '</th><th>' + data[i]['customize'] + '</th><th>' + data[i]['price'] + '</th><th><button id="btnDelete" data-id=' + data[i]['m_id'] + ' type="button" class="btn btn-dark">刪除</button></th></tr>'
+                    $("#table").append(temp);
+                }
+            },
+        })
+        $('#btnAdd').click(function () {
+            var customize = ' ';
+            for (var i = 0, length = $("input[name='customize']").length; i < length; i++) {
+
+                if ($("input[name='customize']")[i].checked) {
+                    if (customize != ' ') {
+                        customize += ',';
+                    }
+                    var temp = ($("input[name='customize']")[i].value);
+                    customize += temp;
+                }
+            }
+	    if ($('#name').val() != "" && $('#price').val() != "" && $('#price').val() >0 && $('#price').val() <=5000) {
+                $.ajax({
+                    url: '/postOwnShopMenu',
+                    type: "GET",
+                    data: {
+                        name: $('#name').val(),
+                        customize: customize,
+                        price: $('#price').val()
+                    },
+                    success: function () {
+                        location.reload();
+                    },
+                })
+            }
+	    else if($('#price').val() <= 0){
+		alert('價錢不能小於0');    
+	    }
+	    else if($('#price').val() >= 5000){
+                alert('價錢不能大於5000');
+            }
+
+        })
+
+        $(document).on("click", '#btnDelete', function () {
+            $.ajax({
+                url: '/ShopMenu/' + $(this).data('id'),
+                type: "DELETE",
+                success: function () {
+                    location.reload();
+                },
+            })
+        })
+    })
+</script>
+
+</html>
