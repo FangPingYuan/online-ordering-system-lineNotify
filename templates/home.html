@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<?php include('basic/header.html'); ?>
+
+<body style="font-family:Microsoft JhengHei;">
+    <div id='wrapper'>
+        <?php include('basic/topbar.html'); ?>
+        <div id=cotainer>
+            <div id='main-page' class='row mx-0 justify-content-center'>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(function () {
+        $.ajax({
+            url: '/getShopInfo',
+            dataType: "json",
+            type: "GET",
+            data: {},
+            success: function (data) {
+                for (i = 0; i < data.length; i++) {
+                    temp = "<div class='card' style='width: 18rem; margin: 30px;'>" +
+                        "<a class='collapsed cardlink' href = '/shop?num=" + data[i]['id'] + "' style='color:black'>" +
+                        "<img src=" + data[i]['shop_image'] + 'sytle = height="200px" class="card-img-top"><div class="card-body"><h5 class="card-title">' +
+                        data[i]['shop_name'] +
+                        "</h5><p class='card-text' style = 'font-size:10px'>" +
+                        data[i]['shop_intro'] +
+                        "</p></div></a></div>"
+                    $("#main-page").append(temp);
+                }
+            },
+        })
+    })
+</script>
+
+</html>
