@@ -1,0 +1,263 @@
+<html>
+
+<head>
+    <?php include('basic/header.html'); ?>
+    <title>HomePage</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function getRadioItem(RadioItemName) {
+            var radios = document.getElementsByName(RadioItemName);
+            for (var i = 0, length = radios.length; i < length; i++) {
+                if (radios[i].checked) {
+                    return radios[i];
+                }
+            }
+            return "";
+        }
+        function getRadioItemvalue(RadioItemName) {
+            var radios = document.getElementsByName(RadioItemName);
+            for (var i = 0, length = radios.length; i < length; i++) {
+                if (radios[i].checked) {
+                    return radios[i].value;
+                }
+            }
+            return "";
+        }
+        function add() {
+            custemp = ''
+            custemp += getRadioItemvalue("spicy");
+            custemp += getRadioItemvalue("sweet");
+            custemp += getRadioItemvalue("ice");
+            custemp += getRadioItemvalue("cook");
+
+            if (getRadioItem("food").value == undefined) {
+                alert("請選擇品項");
+            }
+
+            else if (custemp == '') {
+                if (checkItemFlag != "false") {
+                    alert("請選擇客製化程度");
+                }
+                else if (document.getElementById("amount").value < 1) {
+                    alert("數量錯誤");
+                }
+                else if (document.getElementById("amount").value > 500) {
+                    alert("數量最多500");
+                }
+
+                else {
+                    var table = document.getElementById("table");
+                    table.setAttribute("type", "text");
+                    var newRow = table.insertRow(table.rows.length);
+                    var cel1 = newRow.insertCell(0);
+                    var cel2 = newRow.insertCell(1);
+                    var cel3 = newRow.insertCell(2);
+                    var cel4 = newRow.insertCell(3);
+                    var cel5 = newRow.insertCell(4);
+                    cel1.innerHTML = getRadioItem("food").value;
+                    cel2.innerHTML = custemp;
+                    cel3.innerHTML = document.getElementById("amount").value;
+                    cel4.innerHTML = getRadioItem("food").title * document.getElementById("amount").value;
+                    cel5.innerHTML = "<button type='button' onclick='del(this)'>Delete</button>";
+
+                    $("#submit").removeAttr('disabled');
+                }
+            }
+
+            else if (document.getElementById("amount").value < 1) {
+                alert("數量錯誤");
+            }
+            else if (document.getElementById("amount").value > 500) {
+                alert("數量最多500");
+            }
+
+            else {
+                var table = document.getElementById("table");
+                table.setAttribute("type", "text");
+                var newRow = table.insertRow(table.rows.length);
+                var cel1 = newRow.insertCell(0);
+                var cel2 = newRow.insertCell(1);
+                var cel3 = newRow.insertCell(2);
+                var cel4 = newRow.insertCell(3);
+                var cel5 = newRow.insertCell(4);
+                cel1.innerHTML = getRadioItem("food").value;
+                cel2.innerHTML = custemp;
+                cel3.innerHTML = document.getElementById("amount").value;
+                cel4.innerHTML = getRadioItem("food").title * document.getElementById("amount").value;
+                cel5.innerHTML = "<button type='button' onclick='del(this)'>Delete</button>";
+
+                $("#submit").removeAttr('disabled');
+            }
+        }
+        function del(obj) {
+            var i = obj.parentNode.parentNode.rowIndex;
+            document.getElementById('table').deleteRow(i);
+            if ($('#table tr').length <= 1) {
+                $("#submit").attr('disabled', '');
+            }
+        }
+    </script>
+</head>
+
+<body style="font-family:Microsoft JhengHei;">
+    <div class='wrapper'>
+        <?php include('basic/topbar.html'); ?>
+        <div class='row mx-0 justify-content-center'>
+            <div class="card" style="width: 960px ;height: auto; margin: 30px;">
+                <div class="card-body">
+                    <h3 id='title' class="card-title"></h3>
+                    <ul id="menu" class="list-group list-group-flush">
+                        <li id="name" class="list-group-item">
+                            品名&emsp;
+                        </li>
+                        <div id='customize'></div>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-4 d-flex justify-content-center">
+                                    <input type="number" pattern="\d*" min="1" max="500" class="form-control w-100"
+                                        placeholder="數量" id="amount" name="amount" required>
+                                </div>
+                                <div class="col-3 ml-3 d-flex justify-content-center">
+                                    <input type="button" class="btn btn-secondary" value="添加" name="add" id="add"
+                                        onclick="add();" style="width:100px; height:45px;">
+                                </div>
+                                <div class="col-3 d-flex justify-content-center">
+                                    <input type="button" class="btn btn-secondary" value="送出表單" name="submit"
+                                        id="submit" style="width:100px; height:45px;" disabled>
+                                </div>
+                            </div>
+                            <div class="invalid-feedback">
+                                請輸入數量
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <table border="1" id="table" class="table">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>品項</th>
+                                        <th>客製化</th>
+                                        <th>數量</th>
+                                        <th>價格</th>
+                                        <th>刪除</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+</body>
+
+<script>
+    var checkItemFlag = "";
+    let params = new URLSearchParams(document.location.search.substring(1));
+    $(function () {
+        $.ajax({
+            url: '/getShopInfo',
+            dataType: "json",
+            type: "GET",
+            data: {},
+            success: function (data) {
+                $('#title').text(data[params.get('num') - 1]['shop_name']);
+            },
+        })
+        $.ajax({
+            url: '/getShopMenu',
+            dataType: "json",
+            type: "GET",
+            data: {
+                id: params.get('num'),
+            },
+            success: function (data) {
+                for (i = 0; i < data.length; i++) {
+                    $item = '<input type="radio" id=' + data[i]['m_id'] + ' name="food" value=' + data[i]['name'] + ' title = ' + data[i]['price'] + '>' + data[i]['name'] + ' $' + data[i]['price'];
+                    $('#name').append($item);
+                }
+            },
+        })
+    })
+    $(document).on("click", 'input[type=radio][name=food]', function () {
+        $.ajax({
+            url: '/getShopMenuCustomize',
+            dataType: "json",
+            type: "GET",
+            data: {
+                s_id: params.get('num'),
+                m_id: this.id
+            },
+            success: function (data) {
+                checkItemFlag = "";
+                $cusitem = '';
+		console.log(data);
+                if (data[0]['customize'].match("辣度")) {
+                    $cusitem += `<li id="name" class="list-group-item">
+                                    辣度&emsp;
+                                    <input type="radio" name="spicy" value="不辣">不辣
+                                    <input type="radio" name="spicy" value="小辣">小辣
+                                    <input type="radio" name="spicy" value="中辣">中辣
+                                    <input type="radio" name="spicy" value="大辣">大辣
+                                </li>`;
+                }
+                if (data[0]['customize'].match("冰塊")) {
+                    $cusitem += `<li id="name" class="list-group-item">
+                                    冰塊&emsp;
+                                    <input type="radio" name="ice" value="去冰">去冰
+                                    <input type="radio" name="ice" value="微冰"">微冰
+                                    <input type="radio" name="ice" value="少冰">少冰
+                                    <input type="radio" name="ice" value="正常冰">正常冰
+                                </li>`;
+                }
+                if (data[0]['customize'].match("甜度")) {
+                    $cusitem += `<li id="name" class="list-group-item">
+                                    甜度&emsp;
+                                    <input type="radio" name="sweet" value="無糖">無糖
+                                    <input type="radio" name="sweet" value="微糖"">微糖
+                                    <input type="radio" name="sweet" value="半糖">半糖
+                                    <input type="radio" name="sweet" value="少糖">少糖
+                                    <input type="radio" name="sweet" value="正常糖">正常糖
+                                </li>`;
+                }
+                if (data[0]['customize'].match("熟度")) {
+                    $cusitem += `<li id="name" class="list-group-item">
+                                    熟度&emsp;
+                                    <input type="radio" name="cook" value="1分熟">1分熟
+                                    <input type="radio" name="cook" value="3分熟">3分熟
+                                    <input type="radio" name="cook" value="5分熟">5分熟
+                                    <input type="radio" name="cook" value="7分熟">7分熟
+                                    <input type="radio" name="cook" value="全熟">全熟
+                                </li>`;
+                }
+                if ($cusitem == null){
+                    $cusitem = " ";
+                    checkItemFlag += "false";
+                }
+                $('#customize').html($cusitem);
+            },
+        })
+    })
+    $(document).on("click", '#submit', function () {
+        var arr = {};
+        for (i = 0; i < $('#table').find('tr').length; i++) {
+            arr[i] = {};
+            arr[i]['item'] = $('#table').find('tr:eq(' + (i + 1) + ')').find('td:eq(0)').html();
+            arr[i]['customize'] = $('#table').find('tr:eq(' + (i + 1) + ')').find('td:eq(1)').html()
+            arr[i]['quantity'] = $('#table').find('tr:eq(' + (i + 1) + ')').find('td:eq(2)').html();
+            arr[i]['price'] = $('#table').find('tr:eq(' + (i + 1) + ')').find('td:eq(3)').html();
+        }
+        $.ajax({
+            url: '/ShopMenu',
+            type: "GET",
+            data: {
+                shop_name: $('#title').text(),
+                arr: arr,
+            },
+            success: function () {
+                alert("成功");
+                document.location.href = "/home";
+            }
+        })
+    })
+</script>
+
+</html>
