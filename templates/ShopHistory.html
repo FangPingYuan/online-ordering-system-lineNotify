@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<?php include('basic/header.html'); ?>
+
+<body style="font-family:Microsoft JhengHei;">
+    <? include('basic/topbar.html'); ?>
+    <!-- container -->
+    <div id="container" class="container">
+        <!-- title -->
+        <div class="row my-3 justify-content-center">
+            <div class="col d-flex justify-content-center">
+                <span class="badge badge-light" style="font-size:30px;">號碼牌</span>
+            </div>
+            <div class="col d-flex justify-content-center">
+                <span class="badge badge-light" style="font-size:30px;">line ID</span>
+            </div>
+            <div class="col d-flex justify-content-center">
+                <span class="badge badge-light" style="font-size:30px;">狀態</span>
+            </div>
+        </div>
+        <!-- /title -->
+
+        <!--  -->
+    </div>
+    <!-- /container -->
+
+
+</body>
+
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            url: "/getShopOrder",
+            dataType: "json",
+            type: "GET",
+            success: function (OrderData) {
+                for ($counter = 0; $counter < OrderData.length; $counter++) {
+                    // add order
+                    $NewOrder =
+                        `<div class="row my-3 justify-content-center" id="outer_row_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}">
+                            <div class="col d-flex justify-content-center">
+                                <button id="btn_detail_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}" class="btn btn-outline-secondary btn-block" data-toggle="collapse"
+                                    data-target="#collapsed_detail_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}" aria-expanded="true"
+                                    aria-controls="collapsed_detail_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}">
+
+                                    <div class="row justify-content-center">
+                                        <div class="col">
+                                            <b id="num_card" class="text mr-3" style="font-size:18px;">${OrderData[$counter]['num_card']}</b>
+                                        </div>
+                                        <div class="col">
+                                            <b id="client_lineid" class="text-center"
+                                                style="font-size:18px;">${OrderData[$counter]['client_lineid']}</b>
+                                        </div>
+                                        <div class="col">
+                                            <b id="status_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}"
+                                                class="text ml-3" style="font-size:18px;">${OrderData[$counter]['status']}</b>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row md-3 justify-content-center">
+                            <div class="col">
+                                <div id="collapsed_detail_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}" class="collapse">
+                                    <div class="card card-body">
+                                        <div class="row justify-content-center text-center">
+                                            <div class="col">
+                                                <b style="font-size:20px;">詳細資料</b>
+                                            </div>
+                                        </div>
+                                        <div id="add_detail_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}">
+                                        </div>
+
+                                        <div id="add_sum_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}">
+                                        </div>
+
+                                        <div class="row mt-3 justify-content-center text-center"
+                                            id="add_btn_${OrderData[$counter]['shop_name']}_${OrderData[$counter]['num_card']}"
+                                            data="${OrderData[$counter]['shop_name']}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+
+                    $("#container").append($NewOrder);
+
+                    // add details
+                    $GetSumPrice = 0;
+                    while (true) {
+                        $NewDetail =
+                            `<div class="row mt-3 justify-content-center text-center">
+                                <div class="col">
+                                    <b id="item" style="font-size:18px;">${OrderData[$counter]['item']}</b>
+                                </div>
+                                <div class="col">
+                                    <b id="per_price" style="font-size:18px;">單價 : ${OrderData[$counter]['per_price'] / OrderData[$counter]['quantity']}元</b>
+                                </div>
+                                <div class="col">
+                                    <b id="quantity" style="font-size:18px;">數量 : ${OrderData[$counter]['quantity']} </b>
+                                </div>
+                                <div class="col">
+                                    <b id="customize" style="font-size:18px;">備註 : ${OrderData[$counter]['customize']} </b>
+                                </div>
+                                </div>`
+
+                        $GetSumPrice += OrderData[$counter]['per_price'];
+
+                        // next same order or not
+                        if (($counter != OrderData.length - 1) && (OrderData[$counter + 1]['num_card'] == OrderData[$counter]['num_card']) && (OrderData[$counter + 1]['client_lineid'] == OrderData[$counter]['client_lineid'])) {
+                            $("#add_detail_" + OrderData[$counter]['shop_name'] + "_" + OrderData[$counter]['num_card']).append($NewDetail);
+                            $counter++;
+                        }
+                        else {
+                            $("#add_detail_" + OrderData[$counter]['shop_name'] + "_" + OrderData[$counter]['num_card']).append($NewDetail);
+                            break;
+                        }
+                    }
+
+                    // add sum price
+                    $NewSumPrice =
+                        `<div class="row mt-3 justify-content-center text-center">
+                            <div class="col">
+                                <b id="sum_price" style="font-size:18px;">總價 : ${$GetSumPrice} 元</b>
+                            </div>
+                        </div>`
+
+                    $("#add_sum_" + OrderData[$counter]['shop_name'] + "_" + OrderData[$counter]['num_card']).append($NewSumPrice);
+
+                    // change color
+                    if (OrderData[$counter]['status'] == '準備中') {
+                    }
+                    if (OrderData[$counter]['status'] == '可取餐') {
+                        $("#btn_detail_" + OrderData[$counter]['shop_name'] + "_" + OrderData[$counter]['num_card']).attr('class', 'btn btn-outline-success btn-block');
+                    }
+                    if (OrderData[$counter]['status'] == '完成交易') {
+                        $("#btn_detail_" + OrderData[$counter]['shop_name'] + "_" + OrderData[$counter]['num_card']).attr('class', 'btn btn-outline-info btn-block');
+                    }
+                    if (OrderData[$counter]['status'] == '未取餐') {
+                        $("#btn_detail_" + OrderData[$counter]['shop_name'] + "_" + OrderData[$counter]['num_card']).attr('class', 'btn btn-outline-danger btn-block');
+                    }
+
+                    // for loop end
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+            },
+        });
+    });
+
+</script>
+
+</html>
