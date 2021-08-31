@@ -1,0 +1,157 @@
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<head>
+    
+    <script type="text/javascript">
+
+        function encodeFormData(data) {
+            if (!data) return "";
+            var pairs = [];
+            for (var name in data) {
+                var value = data[name].toString();
+                name = encodeURIComponent(name).replace("%20", "+");
+                value = encodeURIComponent(value).replace("%20", "+");
+                pairs.push(name + "=" + value);
+            }
+            return pairs.join('&');
+        }
+        function checkTel(input){
+	    re = /^[09]{2}[0-9]{8}$/;
+	    if(!re.test(input)){
+	    	alert("手機號碼輸入格式不對哦");
+		input = prompt("請輸入連絡電話:", "");
+                return checkTel(input);
+	    }
+            else{
+                return input;
+            }
+        }
+	function auth(client_id,getName,base64Url) {
+          	var URL = 'https://notify-bot.line.me/oauth/authorize?';
+           	URL += 'response_type=code';
+           	URL += '&client_id=';
+		URL += client_id;
+           	URL += '&redirect_uri=http://140.127.74.168/callbackhomepage';
+           	URL += '&scope=notify';
+           	URL += '&state=NO_STATE';		
+		URL += base64Url;
+		window.location.href = URL;
+        }
+	function checkData(userId){
+		//alert(userId);
+		$.ajax({
+                type: "POST",
+                async:false,
+                url: "/checkTel",
+                data: {
+                        userId : userId
+                },
+                success: function(response){
+                        checkTelFlag = response;
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(XMLHttpRequest.status);
+                                alert(XMLHttpRequest.readyState);
+                                alert(textStatus);
+                        }
+        	});
+		return checkTelFlag;
+	}
+
+        $(function () {
+
+            var url = location.href;
+            if (url.indexOf('?') != -1) {
+                var ary1 = url.split('?');
+                var ary2 = ary1[1].split('&');
+                var ary3 = ary2[0].split('=');
+                var ary4 = ary2[1].split('=');
+                var getCode = ary3[1];
+                var state = ary4[1];
+		
+            }
+           // document.write("回傳值:<br>");
+           // document.write("LoginCode:" + getCode + "<br>");
+           // document.write("state:" + state);
+	   var base64Url = "";
+	   var userId = "";
+	$.ajax({
+		type: "POST",
+		async:false,
+		url: "/loginAccToken",
+		data: {
+			code : getCode,
+		},
+		success: function(response){
+        		var ary = response.split("\"");
+			base64Url = ary[21].split(".")[1];
+    		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(XMLHttpRequest.status);
+                                alert(XMLHttpRequest.readyState);
+                                alert(textStatus);
+                        }
+	});
+		
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);}).join(''));
+		var ary7 = jsonPayload.split(",");
+                var ary8 = ary7[6].split("\"");
+		var ary9 = jsonPayload.split("\"");
+		userId = ary9[7];
+                getName = ary8[3];
+		
+		var checkTelFlag = 0;
+		checkTelFlag = checkData(userId);
+
+		if(checkTelFlag == 0){
+			input = prompt("請輸入連絡電話:", "");
+		        tel = checkTel(input);
+
+                	$.ajax({
+                    		type: 'POST',
+                    		url: '/loginSQL',
+                    		data: {
+                        		id: userId,
+                        		name: getName,
+                        		tel: tel,
+                        		score : 60
+                    		},
+		    		success: function(response){
+		    		},
+		    		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                	alert(XMLHttpRequest.status);
+                                	alert(XMLHttpRequest.readyState);
+                                	alert(textStatus);
+                        	} 
+                	});
+		}
+		var client_id;
+
+		$.ajax({
+			type: 'GET',
+			url:'/notifyClientID',
+			async:false,
+			data:{},
+			success: function(response){
+				client_id = response;
+				auth(client_id, getName, base64Url);
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(XMLHttpRequest.status);
+                                alert(XMLHttpRequest.readyState);
+                                alert(textStatus);
+                        }
+
+		});          
+        })
+    </script>
+    <!-- <meta http-equiv="refresh" content="0; url=http://localhost/homepage" /> -->
+</head>
+
+<body>
+
+</body>
+
+</html>
