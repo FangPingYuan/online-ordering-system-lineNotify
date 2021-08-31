@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<?php include('basic/header.html'); ?>
+
+<body style="font-family:Microsoft JhengHei;">
+    <? include('basic/topbar.html'); ?>
+    <!-- container -->
+    <div id="container" class="container">
+        <div class="row mt-3 mx-3">
+
+            <div class="card card-body" style="font-weight:bold; background-color: rgb(255, 255, 255);">
+                <form class="text-center">
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label for="shopName" style="font-size: 20px;">店名</label>
+                            <input type="text" class="form-control" id="shop_name" autocomplete="off"
+                                style="background-color:rgb(255, 255, 255); border-width:2px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phoneNum" style="font-size: 20px;">聯絡電話</label>
+                            <input type="text" class="form-control" id="shop_phone" autocomplete="off"
+                                style="background-color:rgb(255, 255, 255); border-width:2px;">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label for="shopName" style="font-size: 20px;">聯絡人姓名</label>
+                            <input type="text" class="form-control" id="seller_name" autocomplete="off"
+                                style="background-color:rgb(255, 255, 255); border-width:2px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phoneNum" style="font-size: 20px;">設定密碼</label>
+                            <input type="text" class="form-control" id="shop_password" autocomplete="off"
+                                style="background-color:rgb(255, 255, 255); border-width:2px;">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <label for="shopName" style="font-size: 20px;">店家簡介</label>
+                            <input type="text" class="form-control" id="shop_intro" autocomplete="off"
+                                style="background-color:rgb(255, 255, 255); border-width:2px;">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <label for="shopName" style="font-size: 20px;">圖片網址</label>
+                            <input type="text" class="form-control" id="shop_image" autocomplete="off"
+                                style="background-color:rgb(255, 255, 255); border-width:2px;"><p>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-secondary" id="btnSubmit" style="width: 500px;">送出</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-secondary" id="btn" style="width: 500px;">取消並退出</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--  -->
+    </div>
+    <!-- /container -->
+
+
+</body>
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSubmit").click(function () {
+            $.ajax({
+                url: "/postShop",
+                data: {
+                    shop_name: $("#shop_name").val(),
+                    shop_phone: $("#shop_phone").val(),
+                    seller_name: $("#seller_name").val(),
+                    shop_password: $("#shop_password").val(),
+                    shop_intro: $("#shop_intro").val(),
+                    shop_image: $("#shop_image").val(),
+                },
+                type: "POST",
+                success: function () {
+                    alert("創建成功");
+		    document.location.href = "/home";
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+                    alert(XMLHttpRequest.readyState);
+                    alert(textStatus);
+                },
+            })
+        })
+	$('#btn').click(function(){
+		history.back();
+	})
+    });
+</script>
+
+</html>
