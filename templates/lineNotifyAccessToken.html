@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<div id="popWindow"></div>
+	<script type="text/javascript">
+		function encodeFormData(data) {
+			if (!data) return "";
+			var pairs = [];
+			for (var name in data) {
+				var value = data[name].toString();
+				name = encodeURIComponent(name).replace("%20", "+");
+				value = encodeURIComponent(value).replace("%20", "+");
+				pairs.push(name + "=" + value);
+			}
+			return pairs.join('&');
+		}
+		$(function () {
+			var url = location.href;
+			var base64Url = "";
+			if (url.indexOf('?') != -1) {
+				var ary1 = url.split('?');
+				var ary2 = ary1[1].split('&');
+				var ary3 = ary2[0].split('=');
+				var ary4 = ary2[1].split('=');
+				var getCode = ary3[1];
+				var state = ary4[1];
+				base64Url = state.substr(8);
+			}
+			//document.write(getCode+"<br>"+state);
+
+
+			var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+			var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) { return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join(''));
+			// document.write("<br><br>LoginIdToken decode:<br>" + jsonPayload);
+			var ary7 = jsonPayload.split(",");
+			var ary8 = ary7[6].split("\"");
+			var ary9 = jsonPayload.split("\"");
+			var getName = ary8[3];
+
+
+			var accToken;
+			var redirectUrl = 'http://140.127.74.168/home';
+			$.ajax({
+				type: 'POST',
+				async: false,
+				url: "/getNotifyAccToken",
+				data: { code: getCode },
+				success: function (response) {
+					console.log(response);
+					var ary = response.split("\"");
+					accToken = ary[9];
+					//document.write("Token API:"+accToken);	
+				},
+				error: function (XMLHttpRequest, textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+				}
+			});
+			accToken = "Bearer " + accToken;
+			//alert(accToken);
+			$.ajax({
+				type: "POST",
+				url: "/accTokenSQL",
+				data: {
+					accToken: accToken,
+					getName: getName
+				},
+				success: function (response) {
+					window.location.href = redirectUrl;
+				},
+				error: function (XMLHttpRequest, textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+				}
+			});
+		});
+	</script>
+</body>
+
+</html>
