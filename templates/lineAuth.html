@@ -1,0 +1,53 @@
+<html>
+<head>
+    <?php include('basic/header.html'); ?>
+    <title></title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
+
+    <script type="text/javascript">
+	$(document).on("change", "#checkbox-agree", function () {
+      		if ($(this).prop("checked")) {
+          		$("#NextPage").button("enable");
+      		} 
+		else {
+          		$("#NextPage").button("disable");
+     		}
+  	});
+        function LineAuth() {
+            var URL = 'https://access.line.me/oauth2/v2.1/authorize?';
+            URL += 'response_type=code';
+            URL += '&client_id=1654087960';
+            URL += '&redirect_uri=http://140.127.74.168/login';
+            URL += '&state=abcde';
+            URL += '&scope=openid%20profile';
+            window.location.href = URL;
+        }
+    </script>
+</head>
+<body>
+    <font face="Microsoft JhengHei" size="7">使用步驟說明</font><br>
+    <font face="Microsoft JhengHei" size="6">閱讀完使用步驟說明，輸入LINE帳號密碼登入</font><br>
+    <img src="https://scontent.fkhh1-2.fna.fbcdn.net/v/t1.0-9/103793037_1189292688096892_1496710895206647769_o.jpg?_nc_cat=104&_nc_sid=730e14&_nc_ohc=0pj-AC6ECAAAX8V_5dB&_nc_ht=scontent.fkhh1-2.fna&oh=713d1b8a0070113934f21b128d4a82a6&oe=5F0EE6B9" class-"rounded" width="90%" valign="center"><br>
+    <font face="Microsoft JhengHei" size="6">點選許可存取權限</font><br>
+    <img src="https://scontent.fkhh1-1.fna.fbcdn.net/v/t1.0-9/103718424_1189292711430223_5463292307941198376_o.jpg?_nc_cat=106&_nc_sid=730e14&_nc_ohc=PXjsXSzChw0AX8FfijO&_nc_ht=scontent.fkhh1-1.fna&oh=df9aab758022e766a3d93d7629dfe4fa&oe=5F0DCECD" class="rounded" width="90%" valign="center"><br>
+    <font face="Microsoft JhengHei" size="6">填寫真實手機號碼後，會自動導向LINE Notify頁面，需再登入一次，登入後，請選擇一對一聊天，同意並連動LINE Notify</font><br>
+    <img src="https://scontent.fkhh1-2.fna.fbcdn.net/v/t1.0-9/104478396_1189292734763554_442008315207331575_o.jpg?_nc_cat=110&_nc_sid=730e14&_nc_ohc=FNrdCJXeXEkAX8Uuf6I&_nc_ht=scontent.fkhh1-2.fna&oh=c5fe7418ffa01e5a3b84b33532e5c831&oe=5F102D1B" class="rounded" width="90%" valign="center">
+
+    <div class="container">
+        <div class="row" style="height: 130px;"></div>
+            <div class="row" >
+                <div class="col d-flex justify-content-center" >
+		    <fieldset>
+      			<input type="checkbox" name="checkbox-agree" id="checkbox-agree" class="custom" />
+      			<label for="checkbox-agree">我已了解操作步驟</label>
+     		    </fieldset>
+		    <input type="button" class="btn btn-success" onclick="LineAuth()"id="NextPage" value="下一步"data-inline="true"  disabled/>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
